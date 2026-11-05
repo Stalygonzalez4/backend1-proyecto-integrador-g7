@@ -12,46 +12,47 @@ import jakarta.persistence.Table;
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // para que sea autogenerado por la BD
+    private Long id;
+    private String tipoDocumento;
+    private String numeroDocumento;
     private String nombre;
     private String apellido;
     private String email;
+    private String contrasenaHash;
     private String telefono;
-    private String direccion;
     private String rol; // 'admin', 'usuario', etc.
     private String estado; // 'activo', 'inactivo', 'baneado'
-    private LocalDateTime fechaRegistro;
 
     // ===================
     // Constructor completo
     // ===================
-    public Usuario(Long id, String nombre, String apellido, String email, String telefono,
-            String direccion, String rol, String estado, LocalDateTime fechaRegistro) {
+    public Usuario(Long id, String tipoDocumento, String numeroDocumento, String nombre, String apellido, String email, String contrasenaHash,
+            String telefono, String rol, String estado) {
         this.id = id;
+        this.tipoDocumento = tipoDocumento;
+        this.numeroDocumento = numeroDocumento;
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
+        this.contrasenaHash = contrasenaHash;
         this.telefono = telefono;
-        this.direccion = direccion;
         this.rol = rol;
         this.estado = estado;
-        this.fechaRegistro = fechaRegistro;
     }
 
     // ===================
     // Constructor sin ID
     // (para insertar nuevos usuarios sin ID)
     // ===================
-    public Usuario(String nombre, String apellido, String email, String telefono,
-            String direccion, String rol, String estado, LocalDateTime fechaRegistro) {
-        this(null, nombre, apellido, email, telefono, direccion, rol, estado, fechaRegistro);
+    public Usuario(String tipoDocumento, String numeroDocumento, String nombre, String apellido, String email, String contrasenaHash,
+            String telefono, String rol, String estado) {
+        this(null, tipoDocumento, numeroDocumento, nombre, apellido, email, contrasenaHash, telefono, rol, estado);
     }
 
     // ===================
     // Constructor vacío
     // ===================
     public Usuario() {
-        this.fechaRegistro = LocalDateTime.now();
     }
 
     // ===================
@@ -63,6 +64,22 @@ public class Usuario {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getTipoDocumento() {
+        return tipoDocumento;
+    }
+
+    public void setTipoDocumento(String tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
+    }
+
+    public String getNumeroDocumento() {
+        return numeroDocumento;
+    }
+
+    public void setNumeroDocumento(String numeroDocumento) {
+        this.numeroDocumento = numeroDocumento;
     }
 
     public String getNombre() {
@@ -97,14 +114,6 @@ public class Usuario {
         this.telefono = telefono;
     }
 
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
     public String getRol() {
         return rol;
     }
@@ -117,20 +126,32 @@ public class Usuario {
         return estado;
     }
 
+    public String getContrasenaHash() {
+        return this.contrasenaHash;
+    }
+
+    public void setContrasenaHash(String contrasenaHash) {
+        this.contrasenaHash = contrasenaHash;
+    }
+
     public void setEstado(String estado) {
         this.estado = estado;
     }
 
-    public LocalDateTime getFechaRegistro() {
-        return fechaRegistro;
-    }
-
-    public void setFechaRegistro(LocalDateTime fechaRegistro) {
-        this.fechaRegistro = fechaRegistro;
-    }
-
     @Override
     public String toString() {
-        return "Usuario [id=" + id + ", nombre=" + nombre + ", email=" + email + ", rol=" + rol + "]";
+        return "Usuario{" +
+                "id=" + id +
+                ", tipoDocumento='" + tipoDocumento + '\'' +
+                ", numeroDocumento='" + numeroDocumento + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", apellido='" + apellido + '\'' +
+                ", email='" + email + '\'' +
+                ", telefono='" + telefono + '\'' +
+                ", contrasenaHash='" + contrasenaHash + '\'' +
+                ", rol='" + rol + '\'' +
+                ", estado='" + estado + '\'' +
+                '}';
     }
 }
+
