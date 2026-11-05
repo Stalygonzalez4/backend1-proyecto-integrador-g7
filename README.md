@@ -62,7 +62,17 @@ Almacena la información personal y de acceso de las personas registradas.
 | RolUsuario | Rol: Usuario o Administrador. |
 | Activo | Indica si la cuenta está activa. |
 
-### 💻 2. Equipos
+### 🏷️ 2. Categorias
+
+Almacena las categorías utilizadas para clasificar y organizar los equipos registrados en el sistema.
+
+| Campo | Descripción |
+|---|---|
+| IdCategoria (PK) | Identificador único de la categoría. |
+| Nombre | Nombre de la categoría. |
+| Descripcion | Información adicional sobre la categoría. |
+
+### 💻 3. Equipos
 
 Contiene el inventario de equipos que pueden ser gestionados por el sistema.
 
