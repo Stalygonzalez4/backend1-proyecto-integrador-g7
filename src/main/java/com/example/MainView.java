@@ -1,15 +1,19 @@
 package com.example;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 import com.example.model.Categoria;
-import com.example.model.Producto;
-import com.example.model.Proveedor;
+import com.example.model.Equipo;
+import com.example.model.Prestamo;
 import com.example.model.Usuario;
 import com.example.service.CrudService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -21,7 +25,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@PageTitle("Gestión CRUD - Sistema de Inventario")
+@PageTitle("Gestión CRUD - Sistema de Préstamo de Equipos")
 @Route("")
 public class MainView extends VerticalLayout {
 
@@ -35,102 +39,131 @@ public class MainView extends VerticalLayout {
 
         TabSheet tabs = new TabSheet();
         tabs.setWidthFull();
-        tabs.add("Productos", crearSeccionProductos());
+        tabs.add("Equipos", crearSeccionEquipos());
         tabs.add("Categorías", crearSeccionCategorias());
-        tabs.add("Proveedores", crearSeccionProveedores());
+        tabs.add("Préstamos", crearSeccionPrestamos());
         tabs.add("Usuarios", crearSeccionUsuarios());
 
-        add(new H2("Sistema de Inventario - CRUD"), tabs);
+        add(new H2("Sistema de Préstamo de Equipos - CRUD"), tabs);
     }
 
     // ==========================================
-    // 1. PRODUCTOS
+    // 1. EQUIPOS
     // ==========================================
-    private Component crearSeccionProductos() {
+    private Component crearSeccionEquipos() {
         VerticalLayout layout = new VerticalLayout();
+
         TextField idField = new TextField("ID");
         TextField codigoField = new TextField("Código");
         TextField nombreField = new TextField("Nombre");
-        TextField categoriaField = new TextField("Categoría");
-        TextField precioField = new TextField("Precio");
-        TextField stockField = new TextField("Stock");
 
-        FormLayout form = new FormLayout(idField, codigoField, nombreField, categoriaField, precioField, stockField);
+        ComboBox<Categoria> categoriaField = new ComboBox<>("Categoría");
+        categoriaField.setItems(crudService.listarTodos(Categoria.class));
+        categoriaField.setItemLabelGenerator(Categoria::getNombre);
 
-        Grid<Producto> grid = new Grid<>(Producto.class, false);
-        grid.addColumn(Producto::getId).setHeader("ID").setAutoWidth(true);
-        grid.addColumn(Producto::getCodigo).setHeader("Código").setAutoWidth(true);
-        grid.addColumn(Producto::getNombre).setHeader("Nombre").setAutoWidth(true);
-        grid.addColumn(Producto::getCategoria).setHeader("Categoría").setAutoWidth(true);
-        grid.addColumn(Producto::getPrecio).setHeader("Precio").setAutoWidth(true);
-        grid.addColumn(Producto::getStock).setHeader("Stock").setAutoWidth(true);
+        TextField marcaField = new TextField("Marca");
+        TextField descripcionField = new TextField("Descripción");
+        TextField ubicacionField = new TextField("Ubicación");
+        TextField estadoField = new TextField("Estado");
 
-        Runnable refrescar = () -> grid.setItems(crudService.listarTodos(Producto.class));
+        FormLayout form = new FormLayout(
+            idField, codigoField, nombreField, categoriaField,
+            marcaField, descripcionField, ubicacionField, estadoField
+        );
+
+        Grid<Equipo> grid = new Grid<>(Equipo.class, false);
+        grid.addColumn(Equipo::getId).setHeader("ID").setAutoWidth(true);
+        grid.addColumn(Equipo::getCodigo).setHeader("Código").setAutoWidth(true);
+        grid.addColumn(Equipo::getNombre).setHeader("Nombre").setAutoWidth(true);
+        grid.addColumn(e -> e.getCategoria() != null ? e.getCategoria().getNombre() : "")
+            .setHeader("Categoría").setAutoWidth(true);
+        grid.addColumn(Equipo::getMarca).setHeader("Marca").setAutoWidth(true);
+        grid.addColumn(Equipo::getDescripcion).setHeader("Descripción").setAutoWidth(true);
+        grid.addColumn(Equipo::getUbicacion).setHeader("Ubicación").setAutoWidth(true);
+        grid.addColumn(Equipo::getEstado).setHeader("Estado").setAutoWidth(true);
+
+        Runnable refrescar = () -> grid.setItems(crudService.listarTodos(Equipo.class));
         refrescar.run();
 
         grid.asSingleSelect().addValueChangeListener(e -> {
-            Producto p = e.getValue();
-            if (p != null) {
-                idField.setValue(p.getId() != null ? p.getId().toString() : "");
-                codigoField.setValue(p.getCodigo() != null ? p.getCodigo() : "");
-                nombreField.setValue(p.getNombre() != null ? p.getNombre() : "");
-                categoriaField.setValue(p.getCategoria() != null ? p.getCategoria() : "");
-                precioField.setValue(p.getPrecio() != null ? p.getPrecio().toString() : "");
-                stockField.setValue(p.getStock() != null ? p.getStock().toString() : "");
+            Equipo equipo = e.getValue();
+
+            if (equipo != null) {
+                idField.setValue(equipo.getId() != null ? equipo.getId().toString() : "");
+                codigoField.setValue(equipo.getCodigo() != null ? equipo.getCodigo() : "");
+                nombreField.setValue(equipo.getNombre() != null ? equipo.getNombre() : "");
+                categoriaField.setValue(equipo.getCategoria());
+                marcaField.setValue(equipo.getMarca() != null ? equipo.getMarca() : "");
+                descripcionField.setValue(equipo.getDescripcion() != null ? equipo.getDescripcion() : "");
+                ubicacionField.setValue(equipo.getUbicacion() != null ? equipo.getUbicacion() : "");
+                estadoField.setValue(equipo.getEstado() != null ? equipo.getEstado() : "");
             }
         });
 
         Button btnCrear = new Button("Crear", e -> {
-            Producto p = new Producto(
+            Equipo equipo = new Equipo(
                 codigoField.getValue(),
                 nombreField.getValue(),
                 categoriaField.getValue(),
-                parseDouble(precioField.getValue()),
-                parseInt(stockField.getValue())
+                marcaField.getValue(),
+                descripcionField.getValue(),
+                ubicacionField.getValue(),
+                estadoField.getValue()
             );
-            crudService.guardar(p);
+
+            crudService.guardar(equipo);
             refrescar.run();
-            idField.setValue(p.getId() != null ? p.getId().toString() : "");
-            Notification.show("Producto guardado con ID: " + p.getId());
+            idField.setValue(equipo.getId() != null ? equipo.getId().toString() : "");
+            Notification.show("Equipo guardado con ID: " + equipo.getId());
         });
         btnCrear.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button btnConsultar = new Button("Consultar", e -> {
-            Producto p = crudService.buscarPorId(Producto.class, parseId(idField));
-            if (p != null) {
-                grid.asSingleSelect().setValue(p);
-                Notification.show("Encontrado: " + p.getNombre());
+            Equipo equipo = crudService.buscarPorId(Equipo.class, parseId(idField));
+
+            if (equipo != null) {
+                grid.asSingleSelect().setValue(equipo);
+                Notification.show("Encontrado: " + equipo.getNombre());
             } else {
                 Notification.show("No encontrado");
             }
         });
 
         Button btnActualizar = new Button("Actualizar", e -> {
-            Producto p = crudService.buscarPorId(Producto.class, parseId(idField));
-            if (p != null) {
-                p.setCodigo(codigoField.getValue());
-                p.setNombre(nombreField.getValue());
-                p.setCategoria(categoriaField.getValue());
-                p.setPrecio(parseDouble(precioField.getValue()));
-                p.setStock(parseInt(stockField.getValue()));
-                crudService.actualizar(p);
+            Equipo equipo = crudService.buscarPorId(Equipo.class, parseId(idField));
+
+            if (equipo != null) {
+                equipo.setCodigo(codigoField.getValue());
+                equipo.setNombre(nombreField.getValue());
+                equipo.setCategoria(categoriaField.getValue());
+                equipo.setMarca(marcaField.getValue());
+                equipo.setDescripcion(descripcionField.getValue());
+                equipo.setUbicacion(ubicacionField.getValue());
+                equipo.setEstado(estadoField.getValue());
+
+                crudService.actualizar(equipo);
                 refrescar.run();
-                Notification.show("Producto actualizado");
+                Notification.show("Equipo actualizado");
             } else {
                 Notification.show("ID no encontrado");
             }
         });
 
         Button btnEliminar = new Button("Eliminar", e -> {
-            crudService.eliminar(Producto.class, parseId(idField));
+            crudService.eliminar(Equipo.class, parseId(idField));
             refrescar.run();
-            limpiar(idField, codigoField, nombreField, categoriaField, precioField, stockField);
-            Notification.show("Producto eliminado");
+            limpiar(idField, codigoField, nombreField, marcaField,
+                    descripcionField, ubicacionField, estadoField);
+            categoriaField.clear();
+            grid.asSingleSelect().clear();
+            Notification.show("Equipo eliminado");
         });
         btnEliminar.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
         Button btnLimpiar = new Button("Limpiar", e -> {
-            limpiar(idField, codigoField, nombreField, categoriaField, precioField, stockField);
+            limpiar(idField, codigoField, nombreField, marcaField,
+                    descripcionField, ubicacionField, estadoField);
+            categoriaField.clear();
             grid.asSingleSelect().clear();
         });
 
@@ -143,6 +176,7 @@ public class MainView extends VerticalLayout {
     // ==========================================
     private Component crearSeccionCategorias() {
         VerticalLayout layout = new VerticalLayout();
+
         TextField idField = new TextField("ID");
         TextField nombreField = new TextField("Nombre");
         TextField descripcionField = new TextField("Descripción");
@@ -159,6 +193,7 @@ public class MainView extends VerticalLayout {
 
         grid.asSingleSelect().addValueChangeListener(e -> {
             Categoria c = e.getValue();
+
             if (c != null) {
                 idField.setValue(c.getId() != null ? c.getId().toString() : "");
                 nombreField.setValue(c.getNombre() != null ? c.getNombre() : "");
@@ -168,6 +203,7 @@ public class MainView extends VerticalLayout {
 
         Button btnCrear = new Button("Crear", e -> {
             Categoria c = new Categoria(nombreField.getValue(), descripcionField.getValue());
+
             crudService.guardar(c);
             refrescar.run();
             idField.setValue(c.getId() != null ? c.getId().toString() : "");
@@ -177,6 +213,7 @@ public class MainView extends VerticalLayout {
 
         Button btnConsultar = new Button("Consultar", e -> {
             Categoria c = crudService.buscarPorId(Categoria.class, parseId(idField));
+
             if (c != null) {
                 grid.asSingleSelect().setValue(c);
                 Notification.show("Encontrada: " + c.getNombre());
@@ -187,9 +224,11 @@ public class MainView extends VerticalLayout {
 
         Button btnActualizar = new Button("Actualizar", e -> {
             Categoria c = crudService.buscarPorId(Categoria.class, parseId(idField));
+
             if (c != null) {
                 c.setNombre(nombreField.getValue());
                 c.setDescripcion(descripcionField.getValue());
+
                 crudService.actualizar(c);
                 refrescar.run();
                 Notification.show("Categoría actualizada");
@@ -202,6 +241,7 @@ public class MainView extends VerticalLayout {
             crudService.eliminar(Categoria.class, parseId(idField));
             refrescar.run();
             limpiar(idField, nombreField, descripcionField);
+            grid.asSingleSelect().clear();
             Notification.show("Categoría eliminada");
         });
         btnEliminar.addThemeVariants(ButtonVariant.LUMO_ERROR);
@@ -216,93 +256,174 @@ public class MainView extends VerticalLayout {
     }
 
     // ==========================================
-    // 3. PROVEEDORES
+    // 3. PRÉSTAMOS
     // ==========================================
-    private Component crearSeccionProveedores() {
+    private Component crearSeccionPrestamos() {
         VerticalLayout layout = new VerticalLayout();
+
         TextField idField = new TextField("ID");
-        TextField nombreField = new TextField("Nombre");
-        TextField contactoField = new TextField("Contacto");
-        TextField telefonoField = new TextField("Teléfono");
-        TextField emailField = new TextField("Email");
-        TextField direccionField = new TextField("Dirección");
 
-        FormLayout form = new FormLayout(idField, nombreField, contactoField, telefonoField, emailField, direccionField);
+        ComboBox<Usuario> usuarioField = new ComboBox<>("Usuario");
+        usuarioField.setItems(crudService.listarTodos(Usuario.class));
+        usuarioField.setItemLabelGenerator(u -> u.getNombre() + " " + u.getApellido());
 
-        Grid<Proveedor> grid = new Grid<>(Proveedor.class, false);
-        grid.addColumn(Proveedor::getId).setHeader("ID").setAutoWidth(true);
-        grid.addColumn(Proveedor::getNombre).setHeader("Nombre").setAutoWidth(true);
-        grid.addColumn(Proveedor::getContacto).setHeader("Contacto").setAutoWidth(true);
-        grid.addColumn(Proveedor::getTelefono).setHeader("Teléfono").setAutoWidth(true);
-        grid.addColumn(Proveedor::getEmail).setHeader("Email").setAutoWidth(true);
-        grid.addColumn(Proveedor::getDireccion).setHeader("Dirección").setAutoWidth(true);
+        ComboBox<Equipo> equipoField = new ComboBox<>("Equipo");
+        equipoField.setItems(crudService.listarTodos(Equipo.class));
+        equipoField.setItemLabelGenerator(Equipo::getNombre);
 
-        Runnable refrescar = () -> grid.setItems(crudService.listarTodos(Proveedor.class));
+        ComboBox<Usuario> administradorField = new ComboBox<>("Administrador");
+        administradorField.setItems(crudService.listarTodos(Usuario.class));
+        administradorField.setItemLabelGenerator(u -> u.getNombre() + " " + u.getApellido());
+
+        DateTimePicker fechaPrestamoField = new DateTimePicker("Fecha del préstamo");
+        DateTimePicker fechaDevolucionField = new DateTimePicker("Fecha de devolución prevista");
+
+        TextField estadoField = new TextField("Estado");
+
+        FormLayout form = new FormLayout(
+            idField, usuarioField, equipoField, administradorField,
+            fechaPrestamoField, fechaDevolucionField, estadoField
+        );
+
+        Grid<Prestamo> grid = new Grid<>(Prestamo.class, false);
+        grid.addColumn(Prestamo::getId).setHeader("ID").setAutoWidth(true);
+        grid.addColumn(p -> p.getUsuario() != null
+            ? p.getUsuario().getNombre() + " " + p.getUsuario().getApellido() : "")
+            .setHeader("Usuario").setAutoWidth(true);
+        grid.addColumn(p -> p.getEquipo() != null ? p.getEquipo().getNombre() : "")
+            .setHeader("Equipo").setAutoWidth(true);
+        grid.addColumn(p -> p.getAdministrador() != null
+            ? p.getAdministrador().getNombre() + " " + p.getAdministrador().getApellido() : "")
+            .setHeader("Administrador").setAutoWidth(true);
+        grid.addColumn(Prestamo::getFechaPrestamo).setHeader("Fecha del préstamo").setAutoWidth(true);
+        grid.addColumn(Prestamo::getFechaDevolucionPrevista)
+            .setHeader("Fecha de devolución").setAutoWidth(true);
+        grid.addColumn(Prestamo::getEstado).setHeader("Estado").setAutoWidth(true);
+
+        Runnable refrescar = () -> grid.setItems(crudService.listarTodos(Prestamo.class));
         refrescar.run();
 
         grid.asSingleSelect().addValueChangeListener(e -> {
-            Proveedor p = e.getValue();
-            if (p != null) {
-                idField.setValue(p.getId() != null ? p.getId().toString() : "");
-                nombreField.setValue(p.getNombre() != null ? p.getNombre() : "");
-                contactoField.setValue(p.getContacto() != null ? p.getContacto() : "");
-                telefonoField.setValue(p.getTelefono() != null ? p.getTelefono() : "");
-                emailField.setValue(p.getEmail() != null ? p.getEmail() : "");
-                direccionField.setValue(p.getDireccion() != null ? p.getDireccion() : "");
+            Prestamo prestamo = e.getValue();
+
+            if (prestamo != null) {
+                idField.setValue(prestamo.getId() != null ? prestamo.getId().toString() : "");
+                usuarioField.setValue(prestamo.getUsuario());
+                equipoField.setValue(prestamo.getEquipo());
+                administradorField.setValue(prestamo.getAdministrador());
+
+                if (prestamo.getFechaPrestamo() != null) {
+                    fechaPrestamoField.setValue(
+                        LocalDateTime.ofInstant(
+                            prestamo.getFechaPrestamo().toInstant(),
+                            ZoneId.systemDefault()
+                        )
+                    );
+                } else {
+                    fechaPrestamoField.clear();
+                }
+
+                if (prestamo.getFechaDevolucionPrevista() != null) {
+                    fechaDevolucionField.setValue(
+                        LocalDateTime.ofInstant(
+                            prestamo.getFechaDevolucionPrevista().toInstant(),
+                            ZoneId.systemDefault()
+                        )
+                    );
+                } else {
+                    fechaDevolucionField.clear();
+                }
+
+                estadoField.setValue(prestamo.getEstado() != null ? prestamo.getEstado() : "");
             }
         });
 
         Button btnCrear = new Button("Crear", e -> {
-            Proveedor p = new Proveedor(
-                nombreField.getValue(),
-                contactoField.getValue(),
-                telefonoField.getValue(),
-                emailField.getValue(),
-                direccionField.getValue()
+            if (usuarioField.isEmpty() || equipoField.isEmpty()
+                    || administradorField.isEmpty() || fechaPrestamoField.isEmpty()
+                    || fechaDevolucionField.isEmpty()) {
+                Notification.show("Completa todos los campos obligatorios");
+                return;
+            }
+
+            Prestamo prestamo = new Prestamo(
+                usuarioField.getValue(),
+                equipoField.getValue(),
+                administradorField.getValue(),
+                Date.from(fechaPrestamoField.getValue().atZone(ZoneId.systemDefault()).toInstant()),
+                Date.from(fechaDevolucionField.getValue().atZone(ZoneId.systemDefault()).toInstant()),
+                estadoField.getValue()
             );
-            crudService.guardar(p);
+
+            crudService.guardar(prestamo);
             refrescar.run();
-            idField.setValue(p.getId() != null ? p.getId().toString() : "");
-            Notification.show("Proveedor guardado con ID: " + p.getId());
+            idField.setValue(prestamo.getId() != null ? prestamo.getId().toString() : "");
+            Notification.show("Préstamo guardado con ID: " + prestamo.getId());
         });
         btnCrear.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button btnConsultar = new Button("Consultar", e -> {
-            Proveedor p = crudService.buscarPorId(Proveedor.class, parseId(idField));
-            if (p != null) {
-                grid.asSingleSelect().setValue(p);
-                Notification.show("Encontrado: " + p.getNombre());
+            Prestamo prestamo = crudService.buscarPorId(Prestamo.class, parseId(idField));
+
+            if (prestamo != null) {
+                grid.asSingleSelect().setValue(prestamo);
+                Notification.show("Préstamo encontrado");
             } else {
                 Notification.show("No encontrado");
             }
         });
 
         Button btnActualizar = new Button("Actualizar", e -> {
-            Proveedor p = crudService.buscarPorId(Proveedor.class, parseId(idField));
-            if (p != null) {
-                p.setNombre(nombreField.getValue());
-                p.setContacto(contactoField.getValue());
-                p.setTelefono(telefonoField.getValue());
-                p.setEmail(emailField.getValue());
-                p.setDireccion(direccionField.getValue());
-                crudService.actualizar(p);
+            Prestamo prestamo = crudService.buscarPorId(Prestamo.class, parseId(idField));
+
+            if (prestamo != null) {
+                if (usuarioField.isEmpty() || equipoField.isEmpty()
+                        || administradorField.isEmpty() || fechaPrestamoField.isEmpty()
+                        || fechaDevolucionField.isEmpty()) {
+                    Notification.show("Completa todos los campos obligatorios");
+                    return;
+                }
+
+                prestamo.setUsuario(usuarioField.getValue());
+                prestamo.setEquipo(equipoField.getValue());
+                prestamo.setAdministrador(administradorField.getValue());
+                prestamo.setFechaPrestamo(Date.from(
+                    fechaPrestamoField.getValue().atZone(ZoneId.systemDefault()).toInstant()
+                ));
+                prestamo.setFechaDevolucionPrevista(Date.from(
+                    fechaDevolucionField.getValue().atZone(ZoneId.systemDefault()).toInstant()
+                ));
+                prestamo.setEstado(estadoField.getValue());
+
+                crudService.actualizar(prestamo);
                 refrescar.run();
-                Notification.show("Proveedor actualizado");
+                Notification.show("Préstamo actualizado");
             } else {
                 Notification.show("ID no encontrado");
             }
         });
 
         Button btnEliminar = new Button("Eliminar", e -> {
-            crudService.eliminar(Proveedor.class, parseId(idField));
+            crudService.eliminar(Prestamo.class, parseId(idField));
             refrescar.run();
-            limpiar(idField, nombreField, contactoField, telefonoField, emailField, direccionField);
-            Notification.show("Proveedor eliminado");
+            limpiar(idField, estadoField);
+            usuarioField.clear();
+            equipoField.clear();
+            administradorField.clear();
+            fechaPrestamoField.clear();
+            fechaDevolucionField.clear();
+            grid.asSingleSelect().clear();
+            Notification.show("Préstamo eliminado");
         });
         btnEliminar.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
         Button btnLimpiar = new Button("Limpiar", e -> {
-            limpiar(idField, nombreField, contactoField, telefonoField, emailField, direccionField);
+            limpiar(idField, estadoField);
+            usuarioField.clear();
+            equipoField.clear();
+            administradorField.clear();
+            fechaPrestamoField.clear();
+            fechaDevolucionField.clear();
             grid.asSingleSelect().clear();
         });
 
@@ -315,6 +436,7 @@ public class MainView extends VerticalLayout {
     // ==========================================
     private Component crearSeccionUsuarios() {
         VerticalLayout layout = new VerticalLayout();
+
         TextField idField = new TextField("ID");
         TextField nombreField = new TextField("Nombre");
         TextField apellidoField = new TextField("Apellido");
@@ -324,7 +446,10 @@ public class MainView extends VerticalLayout {
         TextField rolField = new TextField("Rol");
         TextField estadoField = new TextField("Estado");
 
-        FormLayout form = new FormLayout(idField, nombreField, apellidoField, emailField, telefonoField, direccionField, rolField, estadoField);
+        FormLayout form = new FormLayout(
+            idField, nombreField, apellidoField, emailField,
+            telefonoField, direccionField, rolField, estadoField
+        );
 
         Grid<Usuario> grid = new Grid<>(Usuario.class, false);
         grid.addColumn(Usuario::getId).setHeader("ID").setAutoWidth(true);
@@ -340,6 +465,7 @@ public class MainView extends VerticalLayout {
 
         grid.asSingleSelect().addValueChangeListener(e -> {
             Usuario u = e.getValue();
+
             if (u != null) {
                 idField.setValue(u.getId() != null ? u.getId().toString() : "");
                 nombreField.setValue(u.getNombre() != null ? u.getNombre() : "");
@@ -363,6 +489,7 @@ public class MainView extends VerticalLayout {
                 estadoField.getValue(),
                 LocalDateTime.now()
             );
+
             crudService.guardar(u);
             refrescar.run();
             idField.setValue(u.getId() != null ? u.getId().toString() : "");
@@ -372,6 +499,7 @@ public class MainView extends VerticalLayout {
 
         Button btnConsultar = new Button("Consultar", e -> {
             Usuario u = crudService.buscarPorId(Usuario.class, parseId(idField));
+
             if (u != null) {
                 grid.asSingleSelect().setValue(u);
                 Notification.show("Encontrado: " + u.getNombre() + " " + u.getApellido());
@@ -382,6 +510,7 @@ public class MainView extends VerticalLayout {
 
         Button btnActualizar = new Button("Actualizar", e -> {
             Usuario u = crudService.buscarPorId(Usuario.class, parseId(idField));
+
             if (u != null) {
                 u.setNombre(nombreField.getValue());
                 u.setApellido(apellidoField.getValue());
@@ -390,6 +519,7 @@ public class MainView extends VerticalLayout {
                 u.setDireccion(direccionField.getValue());
                 u.setRol(rolField.getValue());
                 u.setEstado(estadoField.getValue());
+
                 crudService.actualizar(u);
                 refrescar.run();
                 Notification.show("Usuario actualizado");
@@ -401,13 +531,16 @@ public class MainView extends VerticalLayout {
         Button btnEliminar = new Button("Eliminar", e -> {
             crudService.eliminar(Usuario.class, parseId(idField));
             refrescar.run();
-            limpiar(idField, nombreField, apellidoField, emailField, telefonoField, direccionField, rolField, estadoField);
+            limpiar(idField, nombreField, apellidoField, emailField,
+                    telefonoField, direccionField, rolField, estadoField);
+            grid.asSingleSelect().clear();
             Notification.show("Usuario eliminado");
         });
         btnEliminar.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
         Button btnLimpiar = new Button("Limpiar", e -> {
-            limpiar(idField, nombreField, apellidoField, emailField, telefonoField, direccionField, rolField, estadoField);
+            limpiar(idField, nombreField, apellidoField, emailField,
+                    telefonoField, direccionField, rolField, estadoField);
             grid.asSingleSelect().clear();
         });
 
@@ -423,22 +556,6 @@ public class MainView extends VerticalLayout {
             return Long.parseLong(field.getValue().trim());
         } catch (Exception e) {
             return null;
-        }
-    }
-
-    private Double parseDouble(String val) {
-        try {
-            return Double.parseDouble(val.trim());
-        } catch (Exception e) {
-            return 0.0;
-        }
-    }
-
-    private Integer parseInt(String val) {
-        try {
-            return Integer.parseInt(val.trim());
-        } catch (Exception e) {
-            return 0;
         }
     }
 
