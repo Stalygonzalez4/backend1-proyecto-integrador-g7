@@ -24,15 +24,26 @@ CREATE TABLE Usuarios (
 );
 GO
 
+CREATE TABLE Categorias (
+    IdCategoria INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre VARCHAR(100) NOT NULL UNIQUE,
+    Descripcion VARCHAR(255)
+);
+GO
+
 CREATE TABLE Equipos (
     IdEquipo INT IDENTITY(1,1) PRIMARY KEY,
     CodigoEquipo VARCHAR(30) NOT NULL UNIQUE,
     NombreEquipo VARCHAR(100) NOT NULL,
-    Tipo VARCHAR(50),
+    IdCategoria INT NOT NULL,
     Marca VARCHAR(50),
     Descripcion VARCHAR(255),
     Ubicacion VARCHAR(100),
-    Estado VARCHAR(30) NOT NULL
+    Estado VARCHAR(30) NOT NULL,
+
+    CONSTRAINT FK_Equipos_Categorias
+        FOREIGN KEY (IdCategoria)
+        REFERENCES Categorias(IdCategoria)
 );
 GO
 
@@ -58,10 +69,7 @@ CREATE TABLE Prestamos (
         REFERENCES Usuarios(IdUsuario),
 
     CONSTRAINT CK_Prestamos_Fechas
-        CHECK (FechaDevolucionPrevista >= FechaPrestamo),
-
-    CONSTRAINT CK_Prestamos_Usuarios
-        CHECK (IdUsuario <> IdAdministrador)
+        CHECK (FechaDevolucionPrevista >= FechaPrestamo)
 );
 GO
 
@@ -88,4 +96,8 @@ GO
 
 CREATE INDEX IX_Prestamos_IdAdministrador
 ON Prestamos(IdAdministrador);
+GO
+
+CREATE INDEX IX_Equipos_IdCategoria
+ON Equipos(IdCategoria);
 GO
