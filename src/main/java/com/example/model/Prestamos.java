@@ -13,8 +13,8 @@ import jakarta.persistence.TemporalType;
 import java.util.Date;
 
 @Entity
-@Table(name = "Proveedor")
-public class Prestamo {
+@Table(name = "Prestamos")
+public class Prestamos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
