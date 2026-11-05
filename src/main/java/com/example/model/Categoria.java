@@ -5,14 +5,20 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 
 @Entity
-@Table(name = "categorias")
+@Table(name = "Categorias")
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "IdCategoria")
     private Long id;
+
+    @Column(name = "Nombre", nullable = false, unique = true)
     private String nombre;
+
+    @Column(name = "Descripcion")
     private String descripcion;
 
     // ===================
