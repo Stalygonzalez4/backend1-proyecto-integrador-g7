@@ -74,16 +74,16 @@ Almacena las categorías utilizadas para clasificar y organizar los equipos regi
 
 ### 💻 3. Equipos
 
-Contiene el inventario de equipos que pueden ser gestionados por el sistema.
+Almacena la información de los equipos disponibles para préstamo, incluyendo su categoría, ubicación y estado actual.
 
 | Campo | Descripción |
 |---|---|
 | IdEquipo (PK) | Identificador único del equipo. |
-| CodigoEquipo | Código único y obligatorio. |
+| CodigoEquipo | Código único y obligatorio del equipo. |
 | NombreEquipo | Nombre del equipo. |
-| Tipo | Categoría o tipo de equipo. |
+| IdCategoria (FK) | Categoría a la que pertenece el equipo. |
 | Marca | Fabricante o marca del equipo. |
-| Descripcion | Características o información adicional. |
+| Descripcion | Características o información adicional del equipo. |
 | Ubicacion | Lugar donde se encuentra el equipo. |
 | Estado | Estado actual del equipo. |
 
