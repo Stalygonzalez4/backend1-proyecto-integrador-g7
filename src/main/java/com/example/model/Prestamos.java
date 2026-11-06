@@ -24,16 +24,16 @@ public class Prestamos {
     private Date fechaDevolucionPrevista;
     private String estado;
 
-    public Prestamo() {
+    public Prestamos() {
     }
 
-    public Prestamo(String idUsuario, String idEquipo, String rol,
+    public Prestamos(String idUsuario, String idEquipo, String rol,
                     Date fechaPrestamo, Date fechaDevolucionPrevista, String estado) {
         this(null, idUsuario, idEquipo, rol, fechaPrestamo,
                 fechaDevolucionPrevista, estado);
     }
 
-    public Prestamo(Long id, String usuario, String equipo, String rol,
+    public Prestamos(Long id, String usuario, String equipo, String rol,
                     Date fechaPrestamo, Date fechaDevolucionPrevista, String estado) {
         this.id = id;
         this.idUsuario = idUsuario;
