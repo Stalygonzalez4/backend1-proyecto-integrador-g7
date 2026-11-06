@@ -7,14 +7,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "productos")
-public class Producto {
+@Table(name = "equipos")
+public class Equipos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String codigo;
-    private String nombre;
+    private Long idEquipos;
+    private String codigoEquipos;
+    private String nombreEquipos;
     private String categoria;
+    private String Descripcion;
+    private String Estado
     private Double precio;
     private Integer stock;
 
