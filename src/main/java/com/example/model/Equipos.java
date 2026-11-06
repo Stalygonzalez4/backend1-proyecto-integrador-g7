@@ -84,11 +84,11 @@ public class Equipos {
         this.descripcion = descripcion;
     }
 
-    public getEstado () {
+    public String getEstado () {
         return estado;
     }
 
-    public setEstado (String estado) {
+    public void setEstado (String estado) {
         this.estado = estado;
     }
 
@@ -110,6 +110,6 @@ public class Equipos {
 
       @Override
     public String toString() {
-        return "Producto [id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ",descripcion=" + descripcion + ",estado=" + estado + ", stock=" + stock + "]";
+        return "Producto [idEquipos=" + idEquipos + ", codigoEquipos=" + codigoEquipos + ", nombreEquipos=" + nombreEquipos + ",descripcion=" + descripcion + ",estado=" + estado + ", stock=" + stock + "]";
     }
 }
