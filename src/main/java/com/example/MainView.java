@@ -436,8 +436,10 @@ public class MainView extends VerticalLayout {
     // ==========================================
     private Component crearSeccionUsuarios() {
         VerticalLayout layout = new VerticalLayout();
-
         TextField idField = new TextField("ID");
+        TextField tipoDocumentoField = new TextField("Tipo de Documento");
+        TextField numeroDocumentoField = new TextField("Número de Documento");
+        TextField contrasenaHashField = new TextField("Contraseña Hash");
         TextField nombreField = new TextField("Nombre");
         TextField apellidoField = new TextField("Apellido");
         TextField emailField = new TextField("Email");
@@ -446,13 +448,13 @@ public class MainView extends VerticalLayout {
         TextField rolField = new TextField("Rol");
         TextField estadoField = new TextField("Estado");
 
-        FormLayout form = new FormLayout(
-            idField, nombreField, apellidoField, emailField,
-            telefonoField, direccionField, rolField, estadoField
-        );
+        FormLayout form = new FormLayout(idField, tipoDocumentoField, numeroDocumentoField, nombreField, apellidoField, emailField, contrasenaHashField, telefonoField, direccionField, rolField, estadoField);
 
         Grid<Usuario> grid = new Grid<>(Usuario.class, false);
         grid.addColumn(Usuario::getId).setHeader("ID").setAutoWidth(true);
+        grid.addColumn(Usuario::getTipoDocumento).setHeader("Tipo de Documento").setAutoWidth(true);
+        grid.addColumn(Usuario::getNumeroDocumento).setHeader("Número de Documento").setAutoWidth(true);
+        grid.addColumn(Usuario::getContrasenaHash).setHeader("Contraseña Hash").setAutoWidth(true);
         grid.addColumn(Usuario::getNombre).setHeader("Nombre").setAutoWidth(true);
         grid.addColumn(Usuario::getApellido).setHeader("Apellido").setAutoWidth(true);
         grid.addColumn(Usuario::getEmail).setHeader("Email").setAutoWidth(true);
@@ -465,14 +467,15 @@ public class MainView extends VerticalLayout {
 
         grid.asSingleSelect().addValueChangeListener(e -> {
             Usuario u = e.getValue();
-
             if (u != null) {
                 idField.setValue(u.getId() != null ? u.getId().toString() : "");
+                tipoDocumentoField.setValue(u.getTipoDocumento() != null ? u.getTipoDocumento() : "");
+                numeroDocumentoField.setValue(u.getNumeroDocumento() != null ? u.getNumeroDocumento() : "");
+                contrasenaHashField.setValue(u.getContrasenaHash() != null ? u.getContrasenaHash() : "");
                 nombreField.setValue(u.getNombre() != null ? u.getNombre() : "");
                 apellidoField.setValue(u.getApellido() != null ? u.getApellido() : "");
                 emailField.setValue(u.getEmail() != null ? u.getEmail() : "");
                 telefonoField.setValue(u.getTelefono() != null ? u.getTelefono() : "");
-                direccionField.setValue(u.getDireccion() != null ? u.getDireccion() : "");
                 rolField.setValue(u.getRol() != null ? u.getRol() : "");
                 estadoField.setValue(u.getEstado() != null ? u.getEstado() : "");
             }
@@ -480,16 +483,17 @@ public class MainView extends VerticalLayout {
 
         Button btnCrear = new Button("Crear", e -> {
             Usuario u = new Usuario(
+
+                tipoDocumentoField.getValue(),
+                numeroDocumentoField.getValue(),
                 nombreField.getValue(),
                 apellidoField.getValue(),
                 emailField.getValue(),
+                contrasenaHashField.getValue(),
                 telefonoField.getValue(),
-                direccionField.getValue(),
                 rolField.getValue(),
-                estadoField.getValue(),
-                LocalDateTime.now()
+                estadoField.getValue()
             );
-
             crudService.guardar(u);
             refrescar.run();
             idField.setValue(u.getId() != null ? u.getId().toString() : "");
@@ -499,7 +503,6 @@ public class MainView extends VerticalLayout {
 
         Button btnConsultar = new Button("Consultar", e -> {
             Usuario u = crudService.buscarPorId(Usuario.class, parseId(idField));
-
             if (u != null) {
                 grid.asSingleSelect().setValue(u);
                 Notification.show("Encontrado: " + u.getNombre() + " " + u.getApellido());
@@ -510,16 +513,14 @@ public class MainView extends VerticalLayout {
 
         Button btnActualizar = new Button("Actualizar", e -> {
             Usuario u = crudService.buscarPorId(Usuario.class, parseId(idField));
-
             if (u != null) {
                 u.setNombre(nombreField.getValue());
                 u.setApellido(apellidoField.getValue());
+                u.setNumeroDocumento(numeroDocumentoField.getValue());
                 u.setEmail(emailField.getValue());
-                u.setTelefono(telefonoField.getValue());
-                u.setDireccion(direccionField.getValue());
+                u.setTelefono(telefonoField.getValue());     
                 u.setRol(rolField.getValue());
                 u.setEstado(estadoField.getValue());
-
                 crudService.actualizar(u);
                 refrescar.run();
                 Notification.show("Usuario actualizado");
@@ -531,16 +532,13 @@ public class MainView extends VerticalLayout {
         Button btnEliminar = new Button("Eliminar", e -> {
             crudService.eliminar(Usuario.class, parseId(idField));
             refrescar.run();
-            limpiar(idField, nombreField, apellidoField, emailField,
-                    telefonoField, direccionField, rolField, estadoField);
-            grid.asSingleSelect().clear();
+            limpiar(idField, tipoDocumentoField, numeroDocumentoField, nombreField, apellidoField, emailField, contrasenaHashField, telefonoField, direccionField, rolField, estadoField);
             Notification.show("Usuario eliminado");
         });
         btnEliminar.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
         Button btnLimpiar = new Button("Limpiar", e -> {
-            limpiar(idField, nombreField, apellidoField, emailField,
-                    telefonoField, direccionField, rolField, estadoField);
+            limpiar(idField, tipoDocumentoField, numeroDocumentoField, nombreField, apellidoField, emailField, contrasenaHashField, telefonoField, direccionField, rolField, estadoField);
             grid.asSingleSelect().clear();
         });
 
