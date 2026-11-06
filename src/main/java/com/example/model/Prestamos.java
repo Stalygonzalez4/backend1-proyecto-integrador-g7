@@ -19,7 +19,7 @@ public class Prestamos {
     private Long id;
     private String idUsuario;
     private String idEquipo;
-    private String administrador;
+    private String rol;
     private Date fechaPrestamo;
     private Date fechaDevolucionPrevista;
     private String estado;
@@ -29,16 +29,16 @@ public class Prestamos {
 
     public Prestamo(String idUsuario, String idEquipo, String rol,
                     Date fechaPrestamo, Date fechaDevolucionPrevista, String estado) {
-        this(null, usuario, equipo, administrador, fechaPrestamo,
+        this(null, idUsuario, idEquipo, rol, fechaPrestamo,
                 fechaDevolucionPrevista, estado);
     }
 
     public Prestamo(Long id, String usuario, String equipo, String rol,
                     Date fechaPrestamo, Date fechaDevolucionPrevista, String estado) {
         this.id = id;
-        this.usuario = usuario;
-        this.equipo = equipo;
-        this.administrador = administrador;
+        this.idUsuario = idUsuario;
+        this.idEquipo = idEquipo;
+        this.rol = rol;
         this.fechaPrestamo = fechaPrestamo;
         this.fechaDevolucionPrevista = fechaDevolucionPrevista;
         this.estado = estado;
@@ -52,27 +52,27 @@ public class Prestamos {
         this.id = id;
     }
 
-    public String getUsuario() {
-        return usuario;
+    public String getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setUsuario(String idUsuario) {
-        this.usuario = usuario;
+    public void setIdUsuario(String idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
-    public String getEquipo() {
-        return equipo;
+    public String getIdEquipo() {
+        return idEquipo;
     }
 
-    public void setEquipo(String idEquipo) {
-        this.equipo = equipo;
+    public void setIdEquipo(String idEquipo) {
+        this.idEequipo = idEquipo;
     }
 
     public String getRol() {
         return rol;
     }
 
-    public void setAdministrador(String rol) {
+    public void setRol(String rol) {
         this.rol = rol;
     }
 
