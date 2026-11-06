@@ -140,7 +140,7 @@ public class Usuario {
     @Override
     public String toString() {
         return "Usuario{" +
-                "id=" + idUsuario +
+                "idUsuario=" + idUsuario +
                 ", tipoDocumento='" + tipoDocumento + '\'' +
                 ", numeroDocumento='" + numeroDocumento + '\'' +
                 ", nombre='" + nombre + '\'' +

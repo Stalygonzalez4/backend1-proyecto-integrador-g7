@@ -451,7 +451,7 @@ public class MainView extends VerticalLayout {
         FormLayout form = new FormLayout(idField, tipoDocumentoField, numeroDocumentoField, nombreField, apellidoField, emailField, contrasenaHashField, telefonoField, direccionField, rolField, estadoField);
 
         Grid<Usuario> grid = new Grid<>(Usuario.class, false);
-        grid.addColumn(Usuario::getId).setHeader("ID").setAutoWidth(true);
+        grid.addColumn(Usuario::getIdUsuario).setHeader("ID").setAutoWidth(true);
         grid.addColumn(Usuario::getTipoDocumento).setHeader("Tipo de Documento").setAutoWidth(true);
         grid.addColumn(Usuario::getNumeroDocumento).setHeader("Número de Documento").setAutoWidth(true);
         grid.addColumn(Usuario::getContrasenaHash).setHeader("Contraseña Hash").setAutoWidth(true);
@@ -468,7 +468,7 @@ public class MainView extends VerticalLayout {
         grid.asSingleSelect().addValueChangeListener(e -> {
             Usuario u = e.getValue();
             if (u != null) {
-                idField.setValue(u.getId() != null ? u.getId().toString() : "");
+                idField.setValue(u.getIdUsuario() != null ? u.getIdUsuario().toString() : "");
                 tipoDocumentoField.setValue(u.getTipoDocumento() != null ? u.getTipoDocumento() : "");
                 numeroDocumentoField.setValue(u.getNumeroDocumento() != null ? u.getNumeroDocumento() : "");
                 contrasenaHashField.setValue(u.getContrasenaHash() != null ? u.getContrasenaHash() : "");
@@ -496,8 +496,8 @@ public class MainView extends VerticalLayout {
             );
             crudService.guardar(u);
             refrescar.run();
-            idField.setValue(u.getId() != null ? u.getId().toString() : "");
-            Notification.show("Usuario guardado con ID: " + u.getId());
+            idField.setValue(u.getIdUsuario() != null ? u.getIdUsuario().toString() : "");
+            Notification.show("Usuario guardado con ID: " + u.getIdUsuario());
         });
         btnCrear.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
