@@ -16,32 +16,12 @@ import java.util.Date;
 @Table(name = "Prestamos")
 public class Prestamos {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IdPrestamo")
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "IdUsuario", nullable = false)
     private Usuario usuario;
-
-    @ManyToOne
-    @JoinColumn(name = "IdEquipo", nullable = false)
     private Equipo equipo;
-
-    @ManyToOne
-    @JoinColumn(name = "IdAdministrador", nullable = false)
     private Usuario administrador;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "FechaPrestamo", nullable = false)
     private Date fechaPrestamo;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "FechaDevolucionPrevista", nullable = false)
     private Date fechaDevolucionPrevista;
-
-    @Column(name = "Estado", nullable = false)
     private String estado;
 
     public Prestamo() {
