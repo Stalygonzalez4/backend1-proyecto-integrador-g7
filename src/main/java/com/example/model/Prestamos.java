@@ -17,9 +17,9 @@ import java.util.Date;
 public class Prestamos {
 
     private Long id;
-    private Usuario usuario;
-    private Equipo equipo;
-    private Usuario administrador;
+    private String idUsuario;
+    private String idEquipo;
+    private String administrador;
     private Date fechaPrestamo;
     private Date fechaDevolucionPrevista;
     private String estado;
@@ -27,13 +27,13 @@ public class Prestamos {
     public Prestamo() {
     }
 
-    public Prestamo(Usuario usuario, Equipo equipo, Usuario administrador,
+    public Prestamo(String idUsuario, String idEquipo, String rol,
                     Date fechaPrestamo, Date fechaDevolucionPrevista, String estado) {
         this(null, usuario, equipo, administrador, fechaPrestamo,
                 fechaDevolucionPrevista, estado);
     }
 
-    public Prestamo(Long id, Usuario usuario, Equipo equipo, Usuario administrador,
+    public Prestamo(Long id, String usuario, String equipo, String rol,
                     Date fechaPrestamo, Date fechaDevolucionPrevista, String estado) {
         this.id = id;
         this.usuario = usuario;
@@ -52,28 +52,28 @@ public class Prestamos {
         this.id = id;
     }
 
-    public Usuario getUsuario() {
+    public String getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(Usuario usuario) {
+    public void setUsuario(String idUsuario) {
         this.usuario = usuario;
     }
 
-    public Equipo getEquipo() {
+    public String getEquipo() {
         return equipo;
     }
 
-    public void setEquipo(Equipo equipo) {
+    public void setEquipo(String idEquipo) {
         this.equipo = equipo;
     }
 
-    public Usuario getAdministrador() {
-        return administrador;
+    public String getRol() {
+        return rol;
     }
 
-    public void setAdministrador(Usuario administrador) {
-        this.administrador = administrador;
+    public void setAdministrador(String rol) {
+        this.rol = rol;
     }
 
     public Date getFechaPrestamo() {
