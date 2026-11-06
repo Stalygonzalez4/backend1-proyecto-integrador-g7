@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idUsuario;
     private String tipoDocumento;
     private String numeroDocumento;
     private String nombre;
@@ -25,9 +25,9 @@ public class Usuario {
     // ===================
     // Constructor completo
     // ===================
-    public Usuario(Long id, String tipoDocumento, String numeroDocumento, String nombre, String apellido, String email, String contrasenaHash,
+    public Usuario(Long idUsuario, String tipoDocumento, String numeroDocumento, String nombre, String apellido, String email, String contrasenaHash,
             String telefono, String rol, String estado) {
-        this.id = id;
+        this.idUsuario = idUsuario;
         this.tipoDocumento = tipoDocumento;
         this.numeroDocumento = numeroDocumento;
         this.nombre = nombre;
@@ -57,12 +57,12 @@ public class Usuario {
     // ===================
     // Getters y setters
     // ===================
-    public Long getId() {
-        return id;
+    public Long getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     public String getTipoDocumento() {
@@ -140,7 +140,7 @@ public class Usuario {
     @Override
     public String toString() {
         return "Usuario{" +
-                "id=" + id +
+                "id=" + idUsuario +
                 ", tipoDocumento='" + tipoDocumento + '\'' +
                 ", numeroDocumento='" + numeroDocumento + '\'' +
                 ", nombre='" + nombre + '\'' +
