@@ -15,8 +15,8 @@ public class Equipos {
     private String codigoEquipos;
     private String nombreEquipos;
     private String categoria;
-    private String Descripcion;
-    private String Estado;
+    private String descripcion;
+    private String estado;
     private Double precio;
     private Integer stock;
 
@@ -49,7 +49,7 @@ public class Equipos {
     }
 
     public void setIdEquipos(Long idEquipos) {
-        this.idEquipos = id;
+        this.idEquipos = idEquipos;
     }
 
     public String getCodigoEquipos() {
