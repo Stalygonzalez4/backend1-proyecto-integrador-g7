@@ -9,32 +9,34 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "equipos")
 public class Equipos {
-    @Id
+@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idEquipos;
     private String codigoEquipos;
     private String nombreEquipos;
     private String categoria;
     private String Descripcion;
-    private String Estado
+    private String Estado;
     private Double precio;
     private Integer stock;
 
     // ===================
     // Constructores
     // ===================
-    public Producto() {
+    public Equipos () {
     }
 
-    public Producto(String codigo, String nombre, String categoria, Double precio, Integer stock) {
-        this(null, codigo, nombre, categoria, precio, stock);
+    public Equipos (String codigoEquipos, String nombreEquipos, String categoria, String descripcion, String estado, Double precio, Integer stock) {
+        this(null, codigoEquipos, nombreEquipos, categoria, descripcion, estado, precio, stock);
     }
 
-    public Producto(Long id, String codigo, String nombre, String categoria, Double precio, Integer stock) {
-        this.id = id;
-        this.codigo = codigo;
-        this.nombre = nombre;
+    public Equipos (Long idEquipos, String codigoEquipos, String nombreEquipos, String categoria, String descripcion, String estado, Double precio, Integer stock) {
+        this.idEquipos = idEquipos;
+        this.codigoEquipos = codigoEquipos;
+        this.nombreEquipos = nombreEquipos;
         this.categoria = categoria;
+        this.descripcion = descripcion;
+        this.estado = estado;
         this.precio = precio;
         this.stock = stock;
     }
@@ -42,28 +44,28 @@ public class Equipos {
     // ===================
     // Getters y setters
     // ===================
-    public Long getId() {
-        return id;
+    public Long getIdEquipos() {
+        return idEquipos;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdEquipos(Long idEquipos) {
+        this.idEquipos = id;
     }
 
-    public String getCodigo() {
-        return codigo;
+    public String getCodigoEquipos() {
+        return codigoEquipos;
     }
 
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
+    public void setCodigoEquipos(String codigoEquipos) {
+        this.codigoEquipos = codigoEquipos;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getNombreEquipos() {
+        return nombreEquipos;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombreEquipos(String nombreEquipos) {
+        this.nombreEquipos = nombreEquipos;
     }
 
     public String getCategoria() {
@@ -72,6 +74,22 @@ public class Equipos {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public String getDescripcion () {
+        return descripcion;
+    }
+
+    public void setDescripcion (String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public getEstado () {
+        return estado;
+    }
+
+    public setEstado (String estado) {
+        this.estado = estado;
     }
 
     public Double getPrecio() {
@@ -90,8 +108,8 @@ public class Equipos {
         this.stock = stock;
     }
 
-    @Override
+      @Override
     public String toString() {
-        return "Producto [id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", stock=" + stock + "]";
+        return "Producto [id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ",descripcion=" + descripcion + ",estado=" + estado + ", stock=" + stock + "]";
     }
 }
