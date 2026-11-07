@@ -1,4 +1,4 @@
-package com.example;
+﻿package com.example;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -24,7 +24,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@PageTitle("GestiÃ³n CRUD - Sistema de PrÃ©stamo de Equipos")
+@PageTitle("GestiÃ³n CRUD - Sistema de Prestamo de Equipos")
 @Route("")
 public class MainView extends VerticalLayout {
 
@@ -39,11 +39,11 @@ public class MainView extends VerticalLayout {
         TabSheet tabs = new TabSheet();
         tabs.setWidthFull();
         tabs.add("Equipos", crearSeccionEquipos());
-        tabs.add("CategorÃ­as", crearSeccionCategorias());
-        tabs.add("PrÃ©stamos", crearSeccionPrestamos());
+        tabs.add("Categorias", crearSeccionCategorias());
+        tabs.add("Prestamos", crearSeccionPrestamos());
         tabs.add("Usuarios", crearSeccionUsuarios());
 
-        add(new H2("Sistema de PrÃ©stamo de Equipos - CRUD"), tabs);
+        add(new H2("Sistema de Prestamo de Equipos - CRUD"), tabs);
     }
 
     // ==========================================
@@ -53,10 +53,10 @@ public class MainView extends VerticalLayout {
         VerticalLayout layout = new VerticalLayout();
 
         TextField idField = new TextField("ID");
-        TextField codigoEquiposField = new TextField("CÃ³digo");
+        TextField codigoEquiposField = new TextField("Código");
         TextField nombreEquiposField = new TextField("Nombre");
-        TextField categoriaField = new TextField("CategorÃ­a");
-        TextField descripcionField = new TextField("DescripciÃ³n");
+        TextField categoriaField = new TextField("Categoría");
+        TextField descripcionField = new TextField("Descripción");
         TextField estadoField = new TextField("Estado");
         TextField precioField = new TextField("Precio");
         TextField stockField = new TextField("Stock");
@@ -66,10 +66,10 @@ public class MainView extends VerticalLayout {
 
         Grid<Equipos> grid = new Grid<>(Equipos.class, false);
         grid.addColumn(Equipos::getIdEquipos).setHeader("ID").setAutoWidth(true);
-        grid.addColumn(Equipos::getCodigoEquipos).setHeader("CÃ³digo").setAutoWidth(true);
+        grid.addColumn(Equipos::getCodigoEquipos).setHeader("Código").setAutoWidth(true);
         grid.addColumn(Equipos::getNombreEquipos).setHeader("Nombre").setAutoWidth(true);
-        grid.addColumn(Equipos::getCategoria).setHeader("CategorÃ­a").setAutoWidth(true);
-        grid.addColumn(Equipos::getDescripcion).setHeader("DescripciÃ³n").setAutoWidth(true);
+        grid.addColumn(Equipos::getCategoria).setHeader("Categoría").setAutoWidth(true);
+        grid.addColumn(Equipos::getDescripcion).setHeader("Descripción").setAutoWidth(true);
         grid.addColumn(Equipos::getEstado).setHeader("Estado").setAutoWidth(true);
         grid.addColumn(Equipos::getPrecio).setHeader("Precio").setAutoWidth(true);
         grid.addColumn(Equipos::getStock).setHeader("Stock").setAutoWidth(true);
@@ -163,14 +163,14 @@ public class MainView extends VerticalLayout {
 
         TextField idField = new TextField("ID");
         TextField nombreField = new TextField("Nombre");
-        TextField descripcionField = new TextField("DescripciÃ³n");
+        TextField descripcionField = new TextField("Descripción");
 
         FormLayout form = new FormLayout(idField, nombreField, descripcionField);
 
         Grid<Categoria> grid = new Grid<>(Categoria.class, false);
         grid.addColumn(Categoria::getId).setHeader("ID").setAutoWidth(true);
         grid.addColumn(Categoria::getNombre).setHeader("Nombre").setAutoWidth(true);
-        grid.addColumn(Categoria::getDescripcion).setHeader("DescripciÃ³n").setAutoWidth(true);
+        grid.addColumn(Categoria::getDescripcion).setHeader("Descripción").setAutoWidth(true);
 
         Runnable refrescar = () -> grid.setItems(crudService.listarTodos(Categoria.class));
         refrescar.run();
@@ -215,7 +215,7 @@ public class MainView extends VerticalLayout {
 
                 crudService.actualizar(c);
                 refrescar.run();
-                Notification.show("CategorÃ­a actualizada");
+                Notification.show("Categoría actualizada");
             } else {
                 Notification.show("ID no encontrado");
             }
@@ -226,7 +226,7 @@ public class MainView extends VerticalLayout {
             refrescar.run();
             limpiar(idField, nombreField, descripcionField);
             grid.asSingleSelect().clear();
-            Notification.show("CategorÃ­a eliminada");
+            Notification.show("Categoría eliminada");
         });
         btnEliminar.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
@@ -353,13 +353,13 @@ public class MainView extends VerticalLayout {
         VerticalLayout layout = new VerticalLayout();
         TextField idField = new TextField("ID");
         TextField tipoDocumentoField = new TextField("Tipo de Documento");
-        TextField numeroDocumentoField = new TextField("NÃºmero de Documento");
-        TextField contrasenaHashField = new TextField("ContraseÃ±a Hash");
+        TextField numeroDocumentoField = new TextField("Número de Documento");
+        TextField contrasenaHashField = new TextField("Contraseña Hash");
         TextField nombreField = new TextField("Nombre");
         TextField apellidoField = new TextField("Apellido");
         TextField emailField = new TextField("Email");
-        TextField telefonoField = new TextField("TelÃ©fono");
-        TextField direccionField = new TextField("DirecciÃ³n");
+        TextField telefonoField = new TextField("Teléfono");
+        TextField direccionField = new TextField("Dirección");
         TextField rolField = new TextField("Rol");
         TextField estadoField = new TextField("Estado");
 
@@ -368,12 +368,12 @@ public class MainView extends VerticalLayout {
         Grid<Usuario> grid = new Grid<>(Usuario.class, false);
         grid.addColumn(Usuario::getIdUsuario).setHeader("ID").setAutoWidth(true);
         grid.addColumn(Usuario::getTipoDocumento).setHeader("Tipo de Documento").setAutoWidth(true);
-        grid.addColumn(Usuario::getNumeroDocumento).setHeader("NÃºmero de Documento").setAutoWidth(true);
-        grid.addColumn(Usuario::getContrasenaHash).setHeader("ContraseÃ±a Hash").setAutoWidth(true);
+        grid.addColumn(Usuario::getNumeroDocumento).setHeader("Número de Documento").setAutoWidth(true);
+        grid.addColumn(Usuario::getContrasenaHash).setHeader("Contraseña Hash").setAutoWidth(true);
         grid.addColumn(Usuario::getNombre).setHeader("Nombre").setAutoWidth(true);
         grid.addColumn(Usuario::getApellido).setHeader("Apellido").setAutoWidth(true);
         grid.addColumn(Usuario::getEmail).setHeader("Email").setAutoWidth(true);
-        grid.addColumn(Usuario::getTelefono).setHeader("TelÃ©fono").setAutoWidth(true);
+        grid.addColumn(Usuario::getTelefono).setHeader("Teléfono").setAutoWidth(true);
         grid.addColumn(Usuario::getRol).setHeader("Rol").setAutoWidth(true);
         grid.addColumn(Usuario::getEstado).setHeader("Estado").setAutoWidth(true);
 
