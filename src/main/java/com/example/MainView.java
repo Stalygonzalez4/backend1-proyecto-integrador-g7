@@ -3,6 +3,21 @@
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
+import java.util.List;
+import java.util.function.Supplier;
+
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import org.openpdf.text.Document;
+import org.openpdf.text.Font;
+import org.openpdf.text.PageSize;
+import org.openpdf.text.Paragraph;
+import org.openpdf.text.Phrase;
+import org.openpdf.text.pdf.PdfPCell;
+import org.openpdf.text.pdf.PdfPTable;
+import org.openpdf.text.pdf.PdfWriter;
 
 import com.example.model.Categoria;
 import com.example.model.Equipos;
@@ -16,6 +31,7 @@ import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -23,6 +39,7 @@ import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 
 @PageTitle("GestiÃ³n CRUD - Sistema de Prestamo de Equipos")
 @Route("")
@@ -151,7 +168,9 @@ public class MainView extends VerticalLayout {
             grid.asSingleSelect().clear();
         });
 
-        layout.add(form, crearAcciones(btnCrear, btnConsultar, btnActualizar, btnEliminar, btnLimpiar), grid);
+        layout.add(form, crearAcciones(btnCrear, btnConsultar, btnActualizar, btnEliminar, btnLimpiar),
+            crearBotonesExportacion("equipos", new String[]{"ID", "Código", "Nombre", "Categoría", "Descripción", "Estado", "Precio", "Stock"},
+                () -> crudService.listarTodos(Equipos.class).stream().map(x -> new String[]{texto(x.getIdEquipos()), texto(x.getCodigoEquipos()), texto(x.getNombreEquipos()), texto(x.getCategoria()), texto(x.getDescripcion()), texto(x.getEstado()), texto(x.getPrecio()), texto(x.getStock())}).toList()), grid);
         return layout;
     }
 
@@ -235,7 +254,9 @@ public class MainView extends VerticalLayout {
             grid.asSingleSelect().clear();
         });
 
-        layout.add(form, crearAcciones(btnCrear, btnConsultar, btnActualizar, btnEliminar, btnLimpiar), grid);
+        layout.add(form, crearAcciones(btnCrear, btnConsultar, btnActualizar, btnEliminar, btnLimpiar),
+            crearBotonesExportacion("categorias", new String[]{"ID", "Nombre", "Descripción"},
+                () -> crudService.listarTodos(Categoria.class).stream().map(x -> new String[]{texto(x.getId()), texto(x.getNombre()), texto(x.getDescripcion())}).toList()), grid);
         return layout;
     }
 
@@ -343,7 +364,9 @@ public class MainView extends VerticalLayout {
             fechaDevolucionField.clear();
             grid.asSingleSelect().clear();
         });
-        layout.add(form, crearAcciones(btnCrear, btnConsultar, btnActualizar, btnEliminar, btnLimpiar), grid);
+        layout.add(form, crearAcciones(btnCrear, btnConsultar, btnActualizar, btnEliminar, btnLimpiar),
+            crearBotonesExportacion("prestamos", new String[]{"ID", "ID Usuario", "ID Equipo", "Rol", "Fecha del préstamo", "Fecha de devolución", "Estado"},
+                () -> crudService.listarTodos(Prestamos.class).stream().map(x -> new String[]{texto(x.getId()), texto(x.getIdUsuario()), texto(x.getIdEquipo()), texto(x.getRol()), texto(x.getFechaPrestamo()), texto(x.getFechaDevolucionPrevista()), texto(x.getEstado())}).toList()), grid);
         return layout;
     }
     // ==========================================
@@ -457,13 +480,68 @@ public class MainView extends VerticalLayout {
             grid.asSingleSelect().clear();
         });
 
-        layout.add(form, crearAcciones(btnCrear, btnConsultar, btnActualizar, btnEliminar, btnLimpiar), grid);
+        layout.add(form, crearAcciones(btnCrear, btnConsultar, btnActualizar, btnEliminar, btnLimpiar),
+            crearBotonesExportacion("usuarios", new String[]{"ID", "Tipo de Documento", "Número de Documento", "Contraseña Hash", "Nombre", "Apellido", "Email", "Teléfono", "Rol", "Estado"},
+                () -> crudService.listarTodos(Usuario.class).stream().map(x -> new String[]{texto(x.getIdUsuario()), texto(x.getTipoDocumento()), texto(x.getNumeroDocumento()), texto(x.getContrasenaHash()), texto(x.getNombre()), texto(x.getApellido()), texto(x.getEmail()), texto(x.getTelefono()), texto(x.getRol()), texto(x.getEstado())}).toList()), grid);
         return layout;
     }
 
     // ==========================================
     // MÃ‰TODOS AUXILIARES
     // ==========================================
+    private Component crearBotonesExportacion(String nombre, String[] columnas, Supplier<List<String[]>> filas) {
+        Anchor excel = new Anchor(new StreamResource(nombre + ".xlsx", () -> crearExcel(columnas, filas.get())), "");
+        excel.getElement().setAttribute("download", true);
+        excel.getStyle().set("text-decoration", "none");
+        Button excelButton = new Button("Descargar Excel");
+        excelButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+        excel.add(excelButton);
+
+        Anchor pdf = new Anchor(new StreamResource(nombre + ".pdf", () -> crearPdf(nombre, columnas, filas.get())), "");
+        pdf.getElement().setAttribute("download", true);
+        pdf.getStyle().set("text-decoration", "none");
+        Button pdfButton = new Button("Descargar PDF");
+        pdf.add(pdfButton);
+        return new HorizontalLayout(excel, pdf);
+    }
+
+    private ByteArrayInputStream crearExcel(String[] columnas, List<String[]> filas) {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(); ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            var sheet = workbook.createSheet("Datos");
+            var header = sheet.createRow(0);
+            for (int i = 0; i < columnas.length; i++) header.createCell(i).setCellValue(columnas[i]);
+            for (int r = 0; r < filas.size(); r++) {
+                var row = sheet.createRow(r + 1);
+                for (int c = 0; c < columnas.length; c++) row.createCell(c).setCellValue(filas.get(r)[c]);
+            }
+            for (int c = 0; c < columnas.length; c++) sheet.autoSizeColumn(c);
+            workbook.write(output);
+            return new ByteArrayInputStream(output.toByteArray());
+        } catch (Exception e) {
+            throw new IllegalStateException("No se pudo generar el Excel", e);
+        }
+    }
+
+    private ByteArrayInputStream crearPdf(String titulo, String[] columnas, List<String[]> filas) {
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            Document document = new Document(PageSize.A4.rotate());
+            PdfWriter.getInstance(document, output);
+            document.open();
+            document.add(new Paragraph("Reporte de " + titulo, new Font(Font.HELVETICA, 16, Font.BOLD)));
+            PdfPTable table = new PdfPTable(columnas.length);
+            table.setWidthPercentage(100);
+            for (String columna : columnas) table.addCell(new PdfPCell(new Phrase(columna)));
+            for (String[] fila : filas) for (String valor : fila) table.addCell(valor);
+            document.add(table);
+            document.close();
+            return new ByteArrayInputStream(output.toByteArray());
+        } catch (Exception e) {
+            throw new IllegalStateException("No se pudo generar el PDF", e);
+        }
+    }
+
+    private String texto(Object valor) { return valor == null ? "" : valor.toString(); }
+
     private Long parseId(TextField field) {
         try {
             return Long.parseLong(field.getValue().trim());
