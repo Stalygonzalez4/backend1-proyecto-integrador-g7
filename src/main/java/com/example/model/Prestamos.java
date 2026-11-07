@@ -17,8 +17,8 @@ import java.util.Date;
 public class Prestamos {
 
     private Long id;
-    private String idUsuario;
-    private String idEquipo;
+    private Long idUsuario;
+    private Long idEquipo;
     private String rol;
     private Date fechaPrestamo;
     private Date fechaDevolucionPrevista;
@@ -27,13 +27,13 @@ public class Prestamos {
     public Prestamos() {
     }
 
-    public Prestamos(String idUsuario, String idEquipo, String rol,
+    public Prestamos(Long idUsuario, Long idEquipo, String rol,
                     Date fechaPrestamo, Date fechaDevolucionPrevista, String estado) {
         this(null, idUsuario, idEquipo, rol, fechaPrestamo,
                 fechaDevolucionPrevista, estado);
     }
 
-    public Prestamos(Long id, String usuario, String equipo, String rol,
+    public Prestamos(Long id, Long idUsuario, Long idEquipo, String rol,
                     Date fechaPrestamo, Date fechaDevolucionPrevista, String estado) {
         this.id = id;
         this.idUsuario = idUsuario;
@@ -52,20 +52,20 @@ public class Prestamos {
         this.id = id;
     }
 
-    public String getIdUsuario() {
+    public Long getIdUsuario() {
         return idUsuario;
     }
 
-    public void setIdUsuario(String idUsuario) {
+    public void setIdUsuario(Long idUsuario) {
         this.idUsuario = idUsuario;
     }
 
-    public String getIdEquipo() {
+    public Long getIdEquipo() {
         return idEquipo;
     }
 
-    public void setIdEquipo(String idEquipo) {
-        this.idEequipo = idEquipo;
+    public void setIdEquipo(Long idEquipo) {
+        this.idEquipo = idEquipo;
     }
 
     public String getRol() {
@@ -102,7 +102,7 @@ public class Prestamos {
 
     @Override
     public String toString() {
-        return "Prestamo [id=" + id + ", usuario=" + usuario
-                + ", equipo=" + equipo + ", estado=" + estado + "]";
+        return "Prestamo [id=" + id + ", usuario=" + idUsuario
+                + ", equipo=" + idEquipo + ", estado=" + estado + "]";
     }
 }
